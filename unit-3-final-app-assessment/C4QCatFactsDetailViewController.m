@@ -7,10 +7,16 @@
 //
 
 #import "C4QCatFactsDetailViewController.h"
+#import <AFNetworking/AFNetworking.h>
 
-#define CAT_GIF_URL @"http://api.giphy.com/v1/gifs/search?q=funny+cat&api_key=dc6zaTOxFJmzC";
+
+#define CAT_GIF_URL @"http://api.giphy.com/v1/gifs/search?q=funny+cat&api_key=dc6zaTOxFJmzC"
 
 @interface C4QCatFactsDetailViewController ()
+@property (weak, nonatomic) IBOutlet UILabel *factLabel;
+
+@property (nonatomic) NSArray *imageDataArray;
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
 @end
 
@@ -18,7 +24,43 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    self.factLabel.text = self.fact;
+    
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    [manager GET:CAT_GIF_URL parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
+    {
+        NSDictionary *json = responseObject;
+        NSArray *data = json[@"data"];
+        self.imageDataArray = data;
+        [self reloadImageView];
+    }
+    failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
+     {
+         NSLog(@" Error: %@", error.localizedDescription);
+    }];
+    
+
+}
+
+-(void)reloadImageView
+{
+    int random =  arc4random_uniform(self.imageDataArray.count-1);
+    
+    NSDictionary *imagesDict = self.imageDataArray[random];
+    NSDictionary *images = imagesDict[@"images"];
+    NSDictionary *fixedWidthImageDict = images[@"fixed_width"];
+    
+    NSString *imageURLString = fixedWidthImageDict[@"url"];
+    
+    NSURL *url = [NSURL URLWithString:imageURLString];
+    NSData *data = [NSData dataWithContentsOfURL:url];
+    
+    self.imageView.image = [UIImage imageWithData:data];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -26,14 +68,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
