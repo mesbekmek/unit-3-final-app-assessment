@@ -86,8 +86,18 @@
     
     cell.delegate = self;
     cell.index = indexPath.row;
+    [cell.plusButton setHidden:NO];
+    cell.accessoryType = UITableViewCellAccessoryNone;
     
-    cell.factLabel.text = self.facts[indexPath.row];
+    NSString *currentFact = self.facts[indexPath.row];
+
+    cell.factLabel.text = currentFact;
+    NSArray *savedFactsArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"SavedFacts"];
+    if([savedFactsArray containsObject:currentFact])
+    {
+        [cell.plusButton setHidden:YES];
+         cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
     
     return cell;
 }
@@ -98,6 +108,8 @@
     C4QCatFactsDetailViewController *c4qdvc = [self.storyboard instantiateViewControllerWithIdentifier:@"C4QCatFactsDetailVCID"];
     
     c4qdvc.fact = self.facts[indexPath.row];
+    
+   
     
     [self.navigationController pushViewController:c4qdvc animated:YES];
     
