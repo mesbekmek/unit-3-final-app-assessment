@@ -18,7 +18,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.savedFactsArray= [[NSUserDefaults standardUserDefaults] objectForKey:@"SavedFacts"];
+    NSArray *savedArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"SavedFacts"];
+    
+    self.savedFactsArray = [NSMutableArray arrayWithArray:savedArray];
 }
 
 
@@ -47,5 +49,20 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        //remove the deleted object from your data source.
+        //If your data source is an NSMutableArray, do this
+        [self.savedFactsArray removeObjectAtIndex:indexPath.row];
+        [tableView reloadData]; // tell table to refresh now
+        
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SavedFacts"];
+        [[NSUserDefaults standardUserDefaults] setObject:self.savedFactsArray forKey:@"SavedFacts"];
+    }
+}
 
 @end
