@@ -55,10 +55,9 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        //remove the deleted object from your data source.
-        //If your data source is an NSMutableArray, do this
+        
         [self.savedFactsArray removeObjectAtIndex:indexPath.row];
-        [tableView reloadData]; // tell table to refresh now
+        [tableView reloadData];
         
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SavedFacts"];
         [[NSUserDefaults standardUserDefaults] setObject:self.savedFactsArray forKey:@"SavedFacts"];
